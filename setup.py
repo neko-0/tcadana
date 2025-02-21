@@ -9,8 +9,8 @@ extras_require = {
     'develop': ['bumpversion', 'black', 'pyflakes'],
     'test': ['pytest', 'pytest-cov', 'coverage', 'pytest-mock'],
     'docs': ['sphinx', 'sphinx_rtd_theme'],
-    'complete': sorted(set(sum(extras_require.values(), [])))
 }
+extras_require['complete'] = sorted(set(sum(extras_require.values(), [])))
 
 setup(
     name='tcadana',
@@ -49,5 +49,5 @@ setup(
     ],
     extras_require=extras_require,
     dependency_links=[],
-    entry_points={'console_scripts': ['tcadana=tcadana.cli:tcadana']},
+    # entry_points={'console_scripts': ['tcadana=tcadana.cli:tcadana']},
 )
