@@ -1,38 +1,47 @@
 [build-system]
-requires = ["wheel", "setuptools>=30.3.0", "attrs>=17.1", "setuptools_scm", "fastentrypoints"]
+requires = [
+  "wheel",
+  "setuptools>=30.3.0",
+  "attrs>=17.1",
+  "setuptools_scm",
+  "fastentrypoints",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "tcadana"
+dynamic = ["version", "readme"]
 description = "Python tools for analyzing TCAD data"
-readme = "README.md"
-license = {text = "Apache License 2.0"}
+license = { text = "Apache License 2.0" }
 requires-python = ">=3.8, <3.14"
-authors = [ {name = "ITk team at Carleton University", email = "your_email@example.com"} ]
-maintainers = [ {name = "Yuzhan Zhao", email = "yuzhan.physics@gmail.com"} ]
+authors = [{ name = "ITk team at Carleton University" }]
+maintainers = [{ name = "Yuzhan Zhao", email = "yuzhan.physics@gmail.com" }]
 keywords = ["tcad", "physics", "si devices", "analysis"]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "numpy",
-    "scipy",
-    "h5py",
-    "numba",
-    "click",
-    "tqdm",
-    "lazy_loader",
-    "matplotlib",
+  "numpy",
+  "scipy",
+  "h5py",
+  "numba",
+  "click",
+  "tqdm",
+  "lazy_loader",
+  "matplotlib",
 ]
 
 [project.urls]
 Homepage = "https://github.com/neko-0/tcadana.git"
+
+[project.scripts]
+tcadana = "tcadana.cli:tcadana"
 
 [project.optional-dependencies]
 shellcomplete = ["click_completion"]
@@ -40,22 +49,17 @@ develop = ["bumpversion", "black", "pyflakes"]
 test = ["pytest", "pytest-cov", "coverage", "pytest-mock"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
+[tool.setuptools.dynamic]
+version = { attr = "tcadana.version.__version__" }
+readme = { file = "README.md" }
+
 [tool.setuptools]
-package_dir = {"": "src"}
-packages = ["find:", {"where": "src", "exclude": ["tests"]}]
-include_package_data = true
-
-[tool.setuptools.metadata]
-description-file = "README.md"
-long-description-content-type = "text/markdown"
-url = "https://github.com/neko-0/tcadana.git"
-
-[tool.setuptools.options.entry-points]
-console_scripts = ["tcadana=tcadana.cli:tcadana"]
+packages = { find = { where = ["src"], exclude = ["tests"] } }
+package-dir = { "" = "src" }
+include-package-data = true
 
 [tool.black]
 line-length = 88
-target-version = ["py38", "py39", "py310", "py311"]
 skip-string-normalization = true
 include = '\.pyi?$'
 force-exclude = '''
