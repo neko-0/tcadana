@@ -134,3 +134,4 @@ py3
 docs/_build
 docs/_generated
 public/
+benchmark/
