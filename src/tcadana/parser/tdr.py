@@ -37,12 +37,12 @@ def extract_triangles(raw_triangles):
 
 
 def open_tdr(filename):
-    tdr_file = TDRIO(filename)
+    tdr_file = TDRFile(filename)
     tdr_file.load()
     return tdr_file
 
 
-class TDRIO:
+class TDRFile:
     __slots__ = (
         "_filename",
         "_file",
