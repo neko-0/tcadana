@@ -4,8 +4,7 @@ __getattr__, __dir__, __all__ = lazy.attach(
     __name__,
     submodules=[
         'parser',
-        'tools.triangles',
-        'tools.database',
+        'triangle_tools',
     ],
     submod_attrs={
         'version': ['__version__'],

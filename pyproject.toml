@@ -35,6 +35,7 @@ dependencies = [
   "tqdm",
   "lazy_loader",
   "matplotlib",
+  "itkdb",
 ]
 
 [project.urls]
