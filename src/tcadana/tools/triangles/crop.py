@@ -44,6 +44,27 @@ def crop_triangles(tri, xlim=None, ylim=None):
 
 
 def cutline_2d(tri, field, axis, value, tolerance=1.0):
+    """
+    Compute the cutline along a specified axis in a triangulation.
+
+    Parameters
+    ----------
+    tri : matplotlib.tri.Triangulation
+        Input triangulation.
+    field : array_like
+        Field to be cut.
+    axis : str
+        Axis to cut along. Must be 'x' or 'y'.
+    value : float
+        Value along the specified axis to cut at.
+    tolerance : float, optional
+        Tolerance for determining if a triangle is cut. Defaults to 1.0.
+
+    Returns
+    -------
+    x, y : tuple of array_like
+        Cutline coordinates.
+    """
     diff = np.abs(getattr(tri, axis) - value)
     indices = diff <= max(tolerance, diff.min())
     other_axis = getattr(tri, 'x' if axis == 'y' else 'y')
