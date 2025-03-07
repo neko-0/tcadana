@@ -37,6 +37,8 @@ def extract_triangles(raw_triangles):
 
 
 def open_tdr(filename):
+    if isinstance(filename, TDRFile):
+        return filename
     tdr_file = TDRFile(filename)
     tdr_file.load()
     return tdr_file
@@ -67,6 +69,13 @@ class TDRFile:
 
     def __getitem__(self, key):
         return self._file[key]
+
+    def __enter__(self):
+        self.load()
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.close()
 
     @property
     def filename(self):
