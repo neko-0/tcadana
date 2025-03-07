@@ -36,6 +36,7 @@ dependencies = [
   "lazy_loader",
   "matplotlib",
   "itkdb",
+  "lz4",
 ]
 
 [project.urls]
@@ -72,7 +73,6 @@ force-exclude = '''
   | _build
   | build
   | dist
-  | RooUnfold
   | example_configs
   | example
   | docs
