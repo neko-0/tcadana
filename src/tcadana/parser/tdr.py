@@ -155,7 +155,7 @@ class TDRFile:
         for key, value in self.geo.items():
             if key.startswith("region_"):
                 if value.attrs["name"] == region_name_bytes:
-                    return self.geo[key]
+                    return int(key.lstrip("region_")), self.geo[key]
 
         return None
 
@@ -183,7 +183,7 @@ class TDRFile:
                 not None, otherwise None.
         """
         # get region Group key
-        region = self.get_region(region_name)
+        region_num, region = self.get_region(region_name)
         if region is None:
             raise KeyError(f"Unable to obtain regionkey for {region_name}")
 
@@ -214,7 +214,6 @@ class TDRFile:
 
         fieldkey = None
         field_name_bytes = field_name.encode("UTF-8")
-        region_num = region.attrs["number of parts"]
         for key, state_data in self.state.items():
             if "region" not in state_data.attrs:
                 continue
