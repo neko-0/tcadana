@@ -8,6 +8,8 @@ import argparse
 import time
 import logging
 
+from tcadana.serialization import to_json
+
 logging.basicConfig(format="%(asctime)s %(levelname)4s: %(message)s")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -26,6 +28,9 @@ class QA_irrad_device:
 
         # If an error is found, error message is saved, and rest of test process is skipped
         self.error_strings = []
+
+        # save a raw copy of the data
+        self.save_raw_data = True
 
         # Create a map of DB entry format to the output json format
         # 	Maps out_key to 2 items: db_key and a 2nd map for values (db->out)
@@ -122,6 +127,9 @@ class QA_irrad_device:
                 if this_test_json:
                     iso_timestamp = this_test_json["Metadata"]["TimeIso"]
                     self.output_jsons[iso_timestamp] = this_test_json
+
+                    if self.save_raw_data:
+                        to_json(testDatum, f"tmp_db/{iso_timestamp}.json")
 
     # Translate the database information into a dictionary, and return
     def translate_test_to_json(self, testData):
@@ -379,10 +387,15 @@ if __name__ == "__main__":
     # https://itkpd-test.unicorncollege.cz/componentManagerGate/componentTypeDetail?id=5e94981e5fbf4f000a5c27eb
     # The pre-rad CCE data are uder SENSOR_QAMINI_TEST (Sensor QAmini test)
     component_type_format = {
-        # "componentType": ["SENSOR_MINI_MD8", "SENSOR_TESTCHIP_MD8", "SENSOR_QAMINI_TEST"],
+        "componentType": [
+            "SENSOR_MINI_MD8",
+            # "SENSOR_TESTCHIP_MD8",
+            # "SENSOR_QAMINI_TEST",
+        ],
         # "currentStage": ["PASS", "PASS", "PRE-IRRAD_TESTS"],
-        "componentType": ["SENSOR_QAMINI_TEST"],
-        "currentStage": ["PRE-IRRAD_TESTS"],
+        # "componentType": ["SENSOR_QAMINI_TEST"],
+        # "currentStage": ["PRE-IRRAD_TESTS"],
+        "currentStage": ["PASS"],
         "pageInfo": {"pageSize": 50},
     }
     all_components = client.get("listComponents", json=component_type_format)
@@ -393,7 +406,8 @@ if __name__ == "__main__":
 
     start_time = time.time()
     test_errors = []
-    for nProcessed, this_comp in enumerate(all_components):
+    nProcessed = 0
+    for this_comp in all_components:
         if nProcessed >= args.nTests:
             break
         sn = this_comp["serialNumber"]
@@ -401,7 +415,7 @@ if __name__ == "__main__":
         # problem 20USBSX0100400
         logger.info(f"Processing {sn}")
         this_device = QA_irrad_device(sn)
-        this_device.parse_component(["MINI_CCE"])
+        this_device.parse_component(["MINI_CCE", "MD8_IV"])
         this_device.process_tests()
 
         if len(this_device.error_strings) > 0:
@@ -424,5 +438,4 @@ if __name__ == "__main__":
             print(err)
 
     # Save data to output json file
-    with open(args.outFile, "w") as json_file:
-        json.dump(output_dict, json_file, indent=4, separators=(",", ": "))
+    to_json(output_dict, args.outFile)
