@@ -2,7 +2,6 @@
 # into a json file that works with Carleton TCAD simulation plotting scripts
 
 import itkdb
-import json
 import datetime
 import argparse
 import time

@@ -1,8 +1,4 @@
-import gc
 import json
-import pickle
-import numpy as np
-import fnmatch
 import logging
 from pathlib import Path
 
@@ -110,7 +106,7 @@ def browse_db_json_data(json_file_path, filter_list, metadata_keys, show_values=
         qa_data = json.load(file)
 
     if filter_list:
-        filtered_data = filter_db_json_data_metadata(qa_data, filter_list)
+        filtered_data = filter_db_json_metadata(qa_data, filter_list)
     else:
         filtered_data = qa_data
 
