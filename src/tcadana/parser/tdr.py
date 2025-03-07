@@ -232,7 +232,7 @@ class TDRFile:
             logger.warning(f"Unable to match field name {field_name}")
             return vertices, triangles
 
-        return vertices, triangles, self.state[f"{fieldkey}/values"]
+        return vertices, triangles, self.state[f"{fieldkey}/values"][:]
 
     def get_region_field_data_dict(self, region_names=None, field_names=None):
         """
