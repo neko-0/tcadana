@@ -37,6 +37,7 @@ dependencies = [
   "matplotlib",
   "itkdb",
   "lz4",
+  "bokeh",
 ]
 
 [project.urls]
@@ -73,9 +74,7 @@ force-exclude = '''
   | _build
   | build
   | dist
-  | example_configs
   | example
   | docs
-  | data
 )/
 '''
