@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+def matches_filter(value, expected_value, invert_match=False):
+    return value != expected_value if invert_match else value == expected_value
+
+
 def filter_db_json_data(json_data, filters):
     """
     Filter QA data dictionary based on arbitrary functions.
@@ -21,9 +25,11 @@ def filter_db_json_data(json_data, filters):
         A dictionary of QA data, where each key represents a test name
         and each value is another dictionary containing all data
         related to that test.
+
     filters : list of callables
         A list of functions that take a test data dictionary as argument.
         A test is included in the output only if all filters evaluate to True.
+
     Returns
     -------
     dict
@@ -38,7 +44,7 @@ def filter_db_json_data(json_data, filters):
     }
 
 
-def filter_db_json_metadata(json_data, filters):
+def filter_db_json_metadata(json_data, metadata_filters, invert_match=False):
     """
     Filter QA data dictionary based on metadata key-value pairs.
 
@@ -48,26 +54,32 @@ def filter_db_json_metadata(json_data, filters):
         A dictionary of QA data, where each key represents a test name
         and each value is another dictionary containing all data
         related to that test.
-    filters : list of tuple
+
+    metadata_filters : list of tuple
         A list of tuples where each tuple consists of a key and an expected
         value to filter the metadata by. If a key-value pair doesn't match
         or the key doesn't exist, the test is excluded from the filtered data.
 
+    invert_match : bool, optional
+        If True, filters out tests that match the key-value pairs.
+
     Returns
     -------
-    filtered_data : dict
+    dict
         A dictionary containing only the tests that match the specified
         key-value pairs in their metadata.
     """
-    filtered_data = {}
-    for test_name, test_data in json_data.items():
-        metadata = test_data["Metadata"]
-        if all(
-            metadata.get(key, None) == expected_value for key, expected_value in filters
-        ):
-            filtered_data[test_name] = test_data
 
-    return filtered_data
+    return {
+        test_name: test_data
+        for test_name, test_data in json_data.items()
+        if all(
+            matches_filter(
+                test_data["Metadata"].get(key, None), expected_value, invert_match
+            )
+            for key, expected_value in metadata_filters
+        )
+    }
 
 
 def show_metadata(json_data, metadata_name):
