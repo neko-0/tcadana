@@ -44,22 +44,57 @@ def open_tdr(filename):
     return tdr_file
 
 
+def _construct_group(input_tdr_object):
+    tdr_group = TDRGroup(input_tdr_object)
+    if hasattr(tdr_group, "keys"):
+        for key in tdr_group.keys():
+            name = key.replace(" ", "_").replace(":", "_")
+            setattr(tdr_group, name, _construct_group(tdr_group[key]))
+    else:
+        name = input_tdr_object.name.split("/")[-1]
+        setattr(tdr_group, name, input_tdr_object)
+    return tdr_group
+
+
+class TDRAttrs:
+    def __init__(self, attrs):
+        self._attrs = attrs
+        for key in attrs.keys():
+            name = key.replace(" ", "_").replace(":", "_")
+            setattr(self, name, attrs[key])
+
+
+class TDRGroup:
+    def __init__(self, grp_object):
+        self._group = grp_object
+        if hasattr(self._group, "keys"):
+            self.keys = self._group.keys
+        if hasattr(self._group, "attrs"):
+            self.attrs = self._group.attrs
+            self.grp_attrs = TDRAttrs(self.attrs)
+
+    def __getitem__(self, key):
+        return self._group[key]
+
+
 class TDRFile:
     __slots__ = (
         "_filename",
         "_file",
         "_region_names",
         "_field_names",
+        "_build_objects",
         "geo",
         "vertex",
         "state",
     )
 
-    def __init__(self, filename):
+    def __init__(self, filename, build_objects=True):
         self._filename = filename
         self._file = None
         self._region_names = None
         self._field_names = None
+        self._build_objects = build_objects
         self.geo = None
         self.vertex = None
         self.state = None
@@ -115,9 +150,10 @@ class TDRFile:
         if self._file:
             return
         self._file = h5py.File(self.filename, "r")
-        self.geo = self._file["collection/geometry_0"]
-        self.vertex = self.geo["vertex"]
-        self.state = self.geo["state_0"]
+        build = _construct_group if self._build_objects else lambda x: x
+        self.geo = build(self._file["collection/geometry_0"])
+        self.vertex = build(self.geo["vertex"])
+        self.state = build(self.geo["state_0"])
 
     def close(self):
         if self._file is not None:
