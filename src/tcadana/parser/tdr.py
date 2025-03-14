@@ -51,8 +51,7 @@ def _construct_group(input_tdr_object):
             name = key.replace(" ", "_").replace(":", "_")
             setattr(tdr_group, name, _construct_group(tdr_group[key]))
     else:
-        name = input_tdr_object.name.split("/")[-1]
-        setattr(tdr_group, name, input_tdr_object)
+        setattr(tdr_group, "dataset", input_tdr_object)
     return tdr_group
 
 
